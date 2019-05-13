@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="container">
+    <h1>問題一覧</h1>
+    <a href="/question/insert" class="button button-outline">問題追加</a>
+    <a href="/category/list" class="button button-outline">カテゴリ一覧</a>
+    <a href="/" class="button button-outline">トップに戻る</a>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>カテゴリ</th>
+                <th>答え</th>
+                <th>問題</th>
+                <th style="text-align: right;">編集／削除</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in list %}
+            <tr>
+                <td>{{ v.Question.id }}</td>
+                <td>{{ v.Category.name }}</td>
+                <td>{{ v.Question.answer }}</td>
+                <td>{{ v.Question.question }}</td>
+                <td style="text-align: right;"><a href="/question/update/{{v.Question.id}}">編集／削除</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="container">
+    <h1>練習問題</h1>
+    <p>プログラミング問題集</p>
+
+    <div id="startDiv" style="margin:20px 0;">
+        <h3>カテゴリを選択</h3>
+        {% for v in list %}
+        <label><input type="checkbox" name="cateCheck" value="{{v.id}}" checked> {{v.name}} </label>
+        {% endfor %}
+        <div>
+            <button id="filterBtn" disabled>開始</button>
+        </div>
+    </div>
+
+    <div id="questionsDiv" style="display:none;">
+
+        <h2 id="resultDiv"></h2>
+
+        <pre class="code prettyprint prettyprinted" id="codePre">
+            <code class="code-content" id="queCode"></code>
+        </pre>
+
+        <input type="text" id="ansInput" data-ans="" autocomplete="off">
+
+        <p id="mesP"></p>
+
+        <button id="giveUpBtn">ギブアップ</button>
+
+        <button id="nextBtn" style="display:none;">次</button>
+
+        <p style="margin-top: 20px;text-align: right;">
+            <a href="/">最初から行う</a>
+        </p>
+
+    </div>
+
+    <p style="margin-top: 20px;text-align: right;">
+        <a href="/question/list">問題作成</a>
+    </p>
+
+</div>
+<script src="/static/js/index.js"></script>
+{% endblock %}

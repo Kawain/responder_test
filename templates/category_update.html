@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="container">
+    <h1>カテゴリ編集／削除</h1>
+    <a href="/category/list" class="button button-outline">カテゴリ一覧に戻る</a>
+    <form action="/category/update/{{row.id}}" method="post">
+        カテゴリ名：<br>
+        <input type="text" name="name" value="{{row.name}}" required>
+        <input class="button-primary" type="submit" value="編集">
+    </form>
+    <h2>削除</h2>
+    <form action="/category/delete/{{row.id}}" method="post">
+        <input class="button-primary" type="submit" value="削除" onclick="return confirm('削除しますか？')">
+    </form>
+</div>
+{% endblock %}
