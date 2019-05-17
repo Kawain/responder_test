@@ -16,6 +16,7 @@ let correct = 0;
 giveUpBtn.addEventListener("click", () => {
     index++;
     ansInput.value = ansInput.dataset.ans;
+    ansInput.disabled = true;
     mesP.innerText = "残念でした";
     giveUpBtn.style.display = "none";
     nextBtn.style.display = "inline";
@@ -93,6 +94,11 @@ async function fnFetch() {
         let questions = [];
         //カテゴリチェックボックス
         let cate = document.getElementsByName("cateCheck");
+        //チェックしているかどうか
+        if (cate.length == 0) {
+            alert("カテゴリをチェックしてください");
+            return;
+        }
         for (let v1 of data) {
             for (let v2 of cate) {
                 if (v2.checked) {

@@ -19,10 +19,11 @@ def DB():
 class Index:
     def on_get(self, req, resp):
         session = DB()
-        obj = session.query(Category).all()
+        obj = session.query(Category).order_by(Category.name.asc()).all()
+        count = session.query(Question).count()
         session.close()
 
-        resp.html = api.template("index.html", list=obj)
+        resp.html = api.template("index.html", list=obj, count=count)
 
 
 @api.route("/start")
@@ -126,17 +127,45 @@ class CategoryDelete:
 @api.route("/question/list")
 class QuestionList:
     def on_get(self, req, resp):
+
         session = DB()
-        # FROM questions LEFT OUTER JOIN category ON
-        obj = session.query(Question, Category).outerjoin(
-            Category, Category.id == Question.category_id).order_by(Question.id.desc()).all()
+        cate = session.query(Category).order_by(Category.name.asc()).all()
+
+        # 検索追加
+        sresult = ""
+
+        if req.params.get("cate") and req.params.get("word"):
+            cates = req.params.get("cate").split(",")
+            word = req.params.get("word")
+            obj = session.query(Question, Category).outerjoin(Category, Category.id == Question.category_id).filter(Question.answer.like(
+                f'%{word}%') | Question.question.like(f'%{word}%')).filter(Question.category_id == f'{cates[0]}').order_by(Question.id.desc()).all()
+            sresult = f"検索結果＝{cates[1]}＆{word}"
+
+        elif req.params.get("cate"):
+            cates = req.params.get("cate").split(",")
+            obj = session.query(Question, Category).outerjoin(Category, Category.id == Question.category_id).filter(
+                Question.category_id == f'{cates[0]}').order_by(Question.id.desc()).all()
+            sresult = f"検索結果＝{cates[1]}"
+
+        elif req.params.get("word"):
+            word = req.params.get("word")
+            obj = session.query(Question, Category).outerjoin(Category, Category.id == Question.category_id).filter(
+                Question.answer.like(f'%{word}%') | Question.question.like(f'%{word}%')).order_by(Question.id.desc()).all()
+            sresult = f"検索結果＝{word}"
+
+        else:
+            obj = session.query(Question, Category).outerjoin(
+                Category, Category.id == Question.category_id).order_by(Question.id.desc()).all()
+
         session.close()
 
+        # 取得したオブジェクトを50文字以下に書き換える
         for v in obj:
             if len(v.Question.question) > 50:
                 v.Question.question = v.Question.question[:50]
 
-        resp.html = api.template("question_list.html", list=obj)
+        resp.html = api.template("question_list.html",
+                                 list=obj, cate=cate, sresult=sresult)
 
 
 @api.route("/question/insert")

@@ -5,6 +5,24 @@
     <a href="/question/insert" class="button button-outline">問題追加</a>
     <a href="/category/list" class="button button-outline">カテゴリ一覧</a>
     <a href="/" class="button button-outline">トップに戻る</a>
+
+    <form action="/question/list" method="get">
+        <div class="row">
+            <div class="column">
+                <select name="cate">
+                    <option value="">選択できます</option>
+                    {% for v in cate %}
+                    <option value="{{v.id}},{{v.name}}">{{v.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="column"><input type="text" name="word" placeholder="キーワード"></div>
+            <div class="column"><button type="submit">検索</button></div>
+        </div>
+    </form>
+    {% if sresult %}
+    <h2>{{sresult}}</h2>
+    {% endif %}
     <table>
         <thead>
             <tr>
@@ -12,7 +30,7 @@
                 <th>カテゴリ</th>
                 <th>答え</th>
                 <th>問題</th>
-                <th style="text-align: right;">編集／削除</th>
+                <th style="text-align: right;white-space: nowrap;">編集／削除</th>
             </tr>
         </thead>
         <tbody>
@@ -21,7 +39,7 @@
                 <td>{{ v.Question.id }}</td>
                 <td>{{ v.Category.name }}</td>
                 <td>{{ v.Question.answer }}</td>
-                <td>{{ v.Question.question }}</td>
+                <td style="white-space: nowrap;">{{ v.Question.question }}</td>
                 <td style="text-align: right;"><a href="/question/update/{{v.Question.id}}">編集／削除</a></td>
             </tr>
             {% endfor %}

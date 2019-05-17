@@ -2,14 +2,14 @@
 {% block body %}
 <div class="container">
     <h1>練習問題</h1>
-    <p>プログラミング問題集</p>
+    <p>プログラミング問題集 (全問題数 {{count}})</p>
 
     <div id="startDiv" style="margin:20px 0;">
         <h3>カテゴリを選択</h3>
         {% for v in list %}
-        <label><input type="checkbox" name="cateCheck" value="{{v.id}}" checked> {{v.name}} </label>
+        <label><input type="checkbox" name="cateCheck" value="{{v.id}}"> {{v.name}} </label>
         {% endfor %}
-        <div>
+        <div style="margin: 20px 0;">
             <button id="filterBtn" disabled>開始</button>
         </div>
     </div>
@@ -22,7 +22,7 @@
             <code class="code-content" id="queCode"></code>
         </pre>
 
-        <input type="text" id="ansInput" data-ans="" autocomplete="off">
+        <input type="text" id="ansInput" data-ans="" placeholder="答えを入力" autocomplete="off">
 
         <p id="mesP"></p>
 
