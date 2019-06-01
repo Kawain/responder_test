@@ -1,6 +1,5 @@
-import random
 import responder
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
 from models import Category, Question
 
@@ -9,6 +8,8 @@ api = responder.API()
 
 
 def DB():
+    """DB接続"""
+
     engine = create_engine("sqlite:///exercise.db", echo=False)
     Session = sessionmaker(bind=engine)
     session = Session()
@@ -17,24 +18,31 @@ def DB():
 
 @api.route("/")
 class Index:
+    """トップページ"""
+
     def on_get(self, req, resp):
         session = DB()
-        obj = session.query(Category).order_by(Category.name.asc()).all()
+        # INNER JOIN と group_by
+        obj = session.query(Category, func.count(Category.id)).join(
+            Question, Category.id == Question.category_id).group_by(Category.id).order_by(Category.name.asc()).all()
+
         count = session.query(Question).count()
+
         session.close()
 
         resp.html = api.template("index.html", list=obj, count=count)
 
 
-@api.route("/start")
-class Start:
+@api.route("/api/get")
+class ApiGet:
+    """全件JSON出力"""
+
     def on_get(self, req, resp):
         session = DB()
+        # 外部結合
         obj = session.query(Question, Category).outerjoin(
             Category, Category.id == Question.category_id).all()
         session.close()
-
-        random.shuffle(obj)
 
         arr1 = []
 
@@ -48,7 +56,7 @@ class Start:
 ############################
 # Category CRUD
 ############################
-@api.route("/category/list")
+@api.route("/crud/category/list")
 class CategoryList:
     def on_get(self, req, resp):
         session = DB()
@@ -58,7 +66,7 @@ class CategoryList:
         resp.html = api.template("category_list.html", list=obj)
 
 
-@api.route("/category/insert")
+@api.route("/crud/category/insert")
 class CategoryInsert:
     def on_get(self, req, resp):
         resp.html = api.template("category_insert.html")
@@ -76,16 +84,17 @@ class CategoryInsert:
         # リダイレクト
         api.redirect(
             resp=resp,
-            location="/category/list"
+            location="/crud/category/list"
         )
 
 
-@api.route("/category/update/{id}")
+@api.route("/crud/category/update/{id}")
 class CategoryUpdate:
     def on_get(self, req, resp, *, id):
         session = DB()
         # http://omake.accense.com/static/doc-ja/sqlalchemy/ormtutorial.html
-        # one() は全ての行レコードをフェッチして、 結果が一意なオブジェクトに対応しないか、複数のレコードが混在している場合に はエラーを送出します
+        # one() は全ての行レコードをフェッチして、 結果が一意なオブジェクトに対応しないか、
+        # 複数のレコードが混在している場合に はエラーを送出します
         # first() は、SELECT に 1 レコードの制約 をかけ、得られた結果をスカラで返します
         row = session.query(Category).filter_by(id=id).one()
         session.close()
@@ -102,11 +111,11 @@ class CategoryUpdate:
 
         api.redirect(
             resp=resp,
-            location="/category/list"
+            location="/crud/category/list"
         )
 
 
-@api.route("/category/delete/{id}")
+@api.route("/crud/category/delete/{id}")
 class CategoryDelete:
     async def on_post(self, req, resp, *, id):
         data = await req.media()
@@ -118,13 +127,13 @@ class CategoryDelete:
 
         api.redirect(
             resp=resp,
-            location=f"/category/list"
+            location="/crud/category/list"
         )
 
 ############################
 # Question CRUD
 ############################
-@api.route("/question/list")
+@api.route("/crud/question/list")
 class QuestionList:
     def on_get(self, req, resp):
 
@@ -154,21 +163,23 @@ class QuestionList:
             sresult = f"検索結果＝{word}"
 
         else:
+            # 最新10件
             obj = session.query(Question, Category).outerjoin(
-                Category, Category.id == Question.category_id).order_by(Question.id.desc()).all()
+                Category, Category.id == Question.category_id).order_by(Question.id.desc()).limit(10).all()
+            sresult = "最新10件"
 
         session.close()
 
-        # 取得したオブジェクトを50文字以下に書き換える
+        # 取得したオブジェクトを40文字以下に書き換える
         for v in obj:
-            if len(v.Question.question) > 50:
-                v.Question.question = v.Question.question[:50]
+            if len(v.Question.question) > 40:
+                v.Question.question = v.Question.question[:40]
 
         resp.html = api.template("question_list.html",
                                  list=obj, cate=cate, sresult=sresult)
 
 
-@api.route("/question/insert")
+@api.route("/crud/question/insert")
 class QuestionInsert:
     def on_get(self, req, resp):
         session = DB()
@@ -178,7 +189,6 @@ class QuestionInsert:
         resp.html = api.template("question_insert.html", list=obj)
 
     async def on_post(self, req, resp):
-        """フォームからPOSTされたデータを取得する場合はreq.media()を使用し async await """
         data = await req.media()
         # insert
         session = DB()
@@ -191,11 +201,11 @@ class QuestionInsert:
         # リダイレクト
         api.redirect(
             resp=resp,
-            location="/question/list"
+            location="/crud/question/list"
         )
 
 
-@api.route("/question/update/{id}")
+@api.route("/crud/question/update/{id}")
 class QuestionUpdate:
     def on_get(self, req, resp, *, id):
         session = DB()
@@ -218,11 +228,11 @@ class QuestionUpdate:
         # リダイレクト
         api.redirect(
             resp=resp,
-            location="/question/list"
+            location="/crud/question/list"
         )
 
 
-@api.route("/question/delete/{id}")
+@api.route("/crud/question/delete/{id}")
 class QuestionDelete:
     async def on_post(self, req, resp, *, id):
         data = await req.media()
@@ -235,7 +245,7 @@ class QuestionDelete:
         # リダイレクト
         api.redirect(
             resp=resp,
-            location="/question/list"
+            location="/crud/question/list"
         )
 
 

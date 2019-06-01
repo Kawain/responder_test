@@ -1,4 +1,5 @@
 //html要素
+const allCheck = document.getElementById("allCheck");
 const startDiv = document.getElementById("startDiv");
 const filterBtn = document.getElementById("filterBtn");
 const questionsDiv = document.getElementById("questionsDiv");
@@ -12,6 +13,25 @@ const nextBtn = document.getElementById("nextBtn");
 let index = 0;
 //正解数
 let correct = 0;
+//全選択と全選択解除
+function allChecked(e) {
+    const f = e.target.checked;
+    const checkboxList = document.getElementsByName("cateCheck");
+    for (const v of checkboxList) {
+        v.checked = f;
+    }
+}
+//全選択と全選択解除
+allCheck.addEventListener("click", allChecked);
+//配列をシャッフル
+function arrShuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        let r = Math.floor(Math.random() * (i + 1));
+        let tmp = arr[i];
+        arr[i] = arr[r];
+        arr[r] = tmp;
+    }
+}
 //ギブアップボタン
 giveUpBtn.addEventListener("click", () => {
     index++;
@@ -75,10 +95,10 @@ function fnHeld(questions) {
     //1問目
     fnDisplay(questions);
 }
-//問題をフェッチしてから抽出
+//問題をフェッチしてからシャッフルして抽出
 async function fnFetch() {
     //フェッチ
-    const res = await fetch(`/start`);
+    const res = await fetch(`/api/get`);
     //オブジェクト作成
     const data = await res.json();
     //データベースが空
@@ -86,6 +106,8 @@ async function fnFetch() {
         alert("申し訳ありません。問題がありませんでした。");
         return;
     }
+    //シャッフル
+    arrShuffle(data);
     //ボタンを有効にする
     filterBtn.disabled = false;
     //開始ボタン

@@ -2,8 +2,8 @@
 {% block body %}
 <div class="container">
     <h1>カテゴリ一覧</h1>
-    <a href="/question/list" class="button button-outline">問題一覧に戻る</a>
-    <a href="/category/insert" class="button button-outline">カテゴリ追加</a>
+    <a href="/crud/question/list" class="button button-outline">問題一覧に戻る</a>
+    <a href="/crud/category/insert" class="button button-outline">カテゴリ追加</a>
     <table>
         <thead>
             <tr>
@@ -17,7 +17,7 @@
             <tr>
                 <td>{{ v.id }}</td>
                 <td>{{ v.name }}</td>
-                <td style="text-align: right;"><a href="/category/update/{{v.id}}">編集／削除</a></td>
+                <td style="text-align: right;"><a href="/crud/category/update/{{v.id}}">編集／削除</a></td>
             </tr>
             {% endfor %}
         </tbody>

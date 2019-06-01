@@ -5,9 +5,9 @@
     <p>プログラミング問題集 (全問題数 {{count}})</p>
 
     <div id="startDiv" style="margin:20px 0;">
-        <h3>カテゴリを選択</h3>
+        <h3>カテゴリを選択 <small><label><input type="checkbox" id="allCheck">全チェック</label></small></h3>
         {% for v in list %}
-        <label><input type="checkbox" name="cateCheck" value="{{v.id}}"> {{v.name}} </label>
+        <label><input type="checkbox" name="cateCheck" value="{{v.Category.id}}"> {{v.Category.name}} ({{v[1]}})</label>
         {% endfor %}
         <div style="margin: 20px 0;">
             <button id="filterBtn" disabled>開始</button>
@@ -37,7 +37,7 @@
     </div>
 
     <p style="margin-top: 20px;text-align: right;">
-        <a href="/question/list">問題作成</a>
+        <a href="/crud/question/list">問題作成</a>
     </p>
 
 </div>

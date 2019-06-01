@@ -2,11 +2,11 @@
 {% block body %}
 <div class="container">
     <h1>問題一覧</h1>
-    <a href="/question/insert" class="button button-outline">問題追加</a>
-    <a href="/category/list" class="button button-outline">カテゴリ一覧</a>
+    <a href="/crud/question/insert" class="button button-outline">問題追加</a>
+    <a href="/crud/category/list" class="button button-outline">カテゴリ一覧</a>
     <a href="/" class="button button-outline">トップに戻る</a>
 
-    <form action="/question/list" method="get">
+    <form action="/crud/question/list" method="get">
         <div class="row">
             <div class="column">
                 <select name="cate">
@@ -20,14 +20,12 @@
             <div class="column"><button type="submit">検索</button></div>
         </div>
     </form>
-    {% if sresult %}
     <h2>{{sresult}}</h2>
-    {% endif %}
     <table>
         <thead>
             <tr>
                 <th>ID</th>
-                <th>カテゴリ</th>
+                <th style="white-space: nowrap;">カテゴリ</th>
                 <th>答え</th>
                 <th>問題</th>
                 <th style="text-align: right;white-space: nowrap;">編集／削除</th>
@@ -40,7 +38,7 @@
                 <td>{{ v.Category.name }}</td>
                 <td>{{ v.Question.answer }}</td>
                 <td style="white-space: nowrap;">{{ v.Question.question }}</td>
-                <td style="text-align: right;"><a href="/question/update/{{v.Question.id}}">編集／削除</a></td>
+                <td style="text-align: right;"><a href="/crud/question/update/{{v.Question.id}}">編集／削除</a></td>
             </tr>
             {% endfor %}
         </tbody>
