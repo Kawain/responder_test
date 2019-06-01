@@ -37,7 +37,11 @@
     </div>
 
     <p style="margin-top: 20px;text-align: right;">
+        {% if auth %}
         <a href="/crud/question/list">問題作成</a>
+        {% else %}
+        <a href="/login">ログイン</a>
+        {% endif %}
     </p>
 
 </div>

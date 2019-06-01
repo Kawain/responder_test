@@ -1,8 +1,12 @@
+import os
 import responder
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
+import hashlib
 from models import Category, Question
 
+# パスワード
+PW = "c29277f55fb31aeb8d4026132e53513a1fb755e5d9c13bf21405b72b9570373f"
 
 api = responder.API()
 
@@ -30,7 +34,10 @@ class Index:
 
         session.close()
 
-        resp.html = api.template("index.html", list=obj, count=count)
+        auth = resp.session.get("pass")
+
+        resp.html = api.template(
+            "index.html", list=obj, count=count, auth=auth)
 
 
 @api.route("/api/get")
@@ -52,6 +59,27 @@ class ApiGet:
 
         # jsonで返す
         resp.media = arr1
+
+
+@api.route("/login")
+class Login:
+    """ログインページ"""
+
+    def on_get(self, req, resp):
+        resp.html = api.template("login.html")
+
+    async def on_post(self, req, resp):
+        data = await req.media()
+        pw = hashlib.sha256(data['pw'].encode()).hexdigest()
+        if PW == pw:
+            resp.session["pass"] = "ok"
+
+        # リダイレクト
+        api.redirect(
+            resp=resp,
+            location="/"
+        )
+
 
 ############################
 # Category CRUD
