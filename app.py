@@ -236,11 +236,21 @@ class QuestionInsert:
 @api.route("/crud/question/update/{id}")
 class QuestionUpdate:
     def on_get(self, req, resp, *, id):
+        ok = True
         session = DB()
-        cate = session.query(Category).all()
-        row = session.query(Question).filter_by(id=id).one()
-        session.close()
-        resp.html = api.template("question_update.html", cate=cate, row=row)
+        try:
+            cate = session.query(Category).all()
+            row = session.query(Question).filter_by(id=id).one()
+        except:
+            ok = False
+        finally:
+            session.close()
+
+        if ok:
+            resp.html = api.template(
+                "question_update.html", cate=cate, row=row)
+        else:
+            resp.text = "ありません"
 
     async def on_post(self, req, resp, *, id):
         data = await req.media()

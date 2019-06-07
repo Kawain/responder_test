@@ -72,7 +72,7 @@ function fnDisplay(questions) {
     } else {
         ansInput.focus();
         resultDiv.innerText = `${index}問中${correct}問正解／正解率${average}％　全部で${number}問あります`;
-        queCode.innerText = `${questions[index][4]} の問題\n\n${questions[index][2]}`;
+        queCode.innerText = `${questions[index][4]} の問題 (id:${questions[index][0]})\n\n${questions[index][2]}`;
         ansInput.dataset.ans = questions[index][1];
     }
 }
